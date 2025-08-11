@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ConsultorioPsicopedagogico.CDatos;
-using ConsultorioPsicopedagogico.CLogica;
 using MySql.Data.MySqlClient;
 using System.Data;
 using System.Windows.Forms;
@@ -16,14 +14,14 @@ namespace ConsultorioPsicopedagogico.CDatos
         private int dni_D;
         private string apellido_D;
         private string nombre_D;
-        private string fechaNac_D; //Problablemente se cambie de string a data 
+        private string fechaNac_D;
         private string diagnostico_D;
         private string escuela_D;
         private int añoEscolar_D;
         private string nivelEscolar_D;
         private string domicilio_D;
         private string obrasocial_D;
-
+        private string dniTutor_D;
 
         public int Dni_D { get => dni_D; set => dni_D = value; }
         public string Apellido_D { get => apellido_D; set => apellido_D = value; }
@@ -35,68 +33,7 @@ namespace ConsultorioPsicopedagogico.CDatos
         public string NivelEscolar_D { get => nivelEscolar_D; set => nivelEscolar_D = value; }
         public string Domicilio_D { get => domicilio_D; set => domicilio_D = value; }
         public string Obrasocial_D { get => obrasocial_D; set => obrasocial_D = value; }
-
-        // Esta funcion atraves de un if puede guardar un concurrente nuevo o modificar uno existente 
-        // ya que recibe de paramentro un bool que lo manejara
-
-        //public void Guardar_Modificar_Concurrente(Concurrentes_CD concurrente, bool esNuevo)
-        //{
-        //    try
-        //    {
-        //        using (MySqlConnection conexion = new MySqlConnection(Conexion.ConnectionString))
-        //        {
-        //            conexion.Open();
-
-        //            string query;
-
-        //            if (esNuevo)
-        //            {
-        //                query = @"INSERT INTO Concurrentes 
-        //                  (DNI_C, Apellido, Nombre, FechaNac, Diagnostico, Escuela, AñoEscolar, NivelEscolar, Domicilio, Obrasocial)
-        //                  VALUES
-        //                  (@Dni, @Apellido, @Nombre, @FechaNac, @Diagnostico, @Escuela, @AñoEscolar, @NivelEscolar, @Domicilio, @Obrasocial)";
-        //            }
-        //            else
-        //            {
-        //                query = @"UPDATE Concurrentes SET 
-        //                  Apellido = @Apellido,
-        //                  Nombre = @Nombre,
-        //                  FechaNac = @FechaNac,
-        //                  Diagnostico = @Diagnostico,
-        //                  Escuela = @Escuela,
-        //                  AñoEscolar = @AñoEscolar,
-        //                  NivelEscolar = @NivelEscolar,
-        //                  Domicilio = @Domicilio,
-        //                  Obrasocial = @Obrasocial
-        //                  WHERE DNI_C = @Dni";
-        //            }
-
-        //            using (MySqlCommand comando = new MySqlCommand(query, conexion))
-        //            {
-        //                comando.Parameters.AddWithValue("@Dni", concurrente.Dni_D);
-        //                comando.Parameters.AddWithValue("@Apellido", concurrente.Apellido_D);
-        //                comando.Parameters.AddWithValue("@Nombre", concurrente.Nombre_D);
-        //                comando.Parameters.AddWithValue("@FechaNac", concurrente.FechaNac_D);
-        //                comando.Parameters.AddWithValue("@Diagnostico", concurrente.Diagnostico_D);
-        //                comando.Parameters.AddWithValue("@Escuela", concurrente.Escuela_D);
-        //                comando.Parameters.AddWithValue("@AñoEscolar", concurrente.AñoEscolar_D);
-        //                comando.Parameters.AddWithValue("@NivelEscolar", concurrente.NivelEscolar_D);
-        //                comando.Parameters.AddWithValue("@Domicilio", concurrente.Domicilio_D);
-        //                comando.Parameters.AddWithValue("@Obrasocial", concurrente.Obrasocial_D);
-
-        //                comando.ExecuteNonQuery();
-        //            }
-
-        //            string mensaje = esNuevo ? "Concurrente registrado exitosamente" : "Registro modificado exitosamente";
-        //            MessageBox.Show(mensaje, "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show("Hubo un error al guardar los datos: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //    }
-        //}
-
+        public string DniTutor_D { get => dniTutor_D; set => dniTutor_D = value; }
 
         public void CargarEnSql(Concurrentes_CD concurrenteN)
         {
@@ -107,9 +44,9 @@ namespace ConsultorioPsicopedagogico.CDatos
                     conexion.Open();
 
                     string query = @"INSERT INTO Concurrentes 
-                            (DNI_C, Apellido, Nombre, FechaNac, Diagnostico, Escuela, AñoEscolar, NivelEscolar, Domicilio, Obrasocial)
+                            (DNI_C, Apellido, Nombre, FechaNac, Diagnostico, Escuela, AñoEscolar, NivelEscolar, Domicilio, Obrasocial, DNI_Tutor)
                             VALUES 
-                            (@Dni, @Apellido, @Nombre, @FechaNac, @Diagnostico, @Escuela, @AñoEscolar, @NivelEscolar, @Domicilio, @Obrasocial)";
+                            (@Dni, @Apellido, @Nombre, @FechaNac, @Diagnostico, @Escuela, @AñoEscolar, @NivelEscolar, @Domicilio, @Obrasocial, @DniTutor)";
 
                     using (MySqlCommand comando = new MySqlCommand(query, conexion))
                     {
@@ -123,6 +60,7 @@ namespace ConsultorioPsicopedagogico.CDatos
                         comando.Parameters.AddWithValue("@NivelEscolar", concurrenteN.NivelEscolar_D);
                         comando.Parameters.AddWithValue("@Domicilio", concurrenteN.Domicilio_D);
                         comando.Parameters.AddWithValue("@Obrasocial", concurrenteN.Obrasocial_D);
+                        comando.Parameters.AddWithValue("@DniTutor", concurrenteN.DniTutor_D);
 
                         comando.ExecuteNonQuery();
                     }
@@ -184,7 +122,8 @@ namespace ConsultorioPsicopedagogico.CDatos
                     concurrenteSeleccionado.AñoEscolar_D = Convert.ToInt32(registro["AñoEscolar"]);
                     concurrenteSeleccionado.NivelEscolar_D = registro["NivelEscolar"].ToString();
                     concurrenteSeleccionado.Domicilio_D = registro["Domicilio"].ToString();
-                    concurrenteSeleccionado.Obrasocial_D = registro["Obrasocial"].ToString();
+                    concurrenteSeleccionado.Obrasocial_D = registro["Obrasocial"].ToString(); 
+                    concurrenteSeleccionado.DniTutor_D = registro["DNI_Tutor"].ToString();
                 }
                 conexion.Close();
                 return concurrenteSeleccionado;
@@ -215,6 +154,7 @@ namespace ConsultorioPsicopedagogico.CDatos
                             NivelEscolar = @NivelEscolar,
                             Domicilio = @Domicilio,
                             Obrasocial = @Obrasocial
+                            DNI_Tutor = @DniTutor
                          WHERE DNI_C = @Dni";
 
                     using (MySqlCommand comando = new MySqlCommand(query, conexion))
@@ -229,6 +169,7 @@ namespace ConsultorioPsicopedagogico.CDatos
                         comando.Parameters.AddWithValue("@NivelEscolar", concurrente.NivelEscolar_D);
                         comando.Parameters.AddWithValue("@Domicilio", concurrente.Domicilio_D);
                         comando.Parameters.AddWithValue("@Obrasocial", concurrente.Obrasocial_D);
+                        comando.Parameters.AddWithValue("@DniTutor", concurrente.DniTutor_D);
 
                         comando.ExecuteNonQuery();
                     }
