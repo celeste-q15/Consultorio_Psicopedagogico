@@ -118,6 +118,13 @@ namespace ConsultorioPsicopedagogico.CPresentacion
                     .Matches(@"^\d{8}$").WithMessage("El DNI del tutor debe tener exactamente 8 dígitos.");
             }
         }
+
+        private void btn_volver_Click(object sender, EventArgs e)
+        {
+            CPresentacion.Concurrentes concurrentes = new CPresentacion.Concurrentes();
+            concurrentes.Show();
+            this.Hide();
+        }
     }
 }
 

@@ -337,6 +337,7 @@
             this.btn_volver.TabIndex = 29;
             this.btn_volver.Text = "VOLVER";
             this.btn_volver.UseVisualStyleBackColor = false;
+            this.btn_volver.Click += new System.EventHandler(this.btn_volver_Click);
             // 
             // pictureBox1
             // 

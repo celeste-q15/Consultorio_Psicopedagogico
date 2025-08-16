@@ -89,6 +89,8 @@ namespace ConsultorioPsicopedagogico.CLogica
         {
             Concurrentes_CD datos = new Concurrentes_CD();
             var seleccionado = datos.SelectorNuevoConcurrente(dni);
+            if (seleccionado == null)
+                return null;
             return PasarLogica(seleccionado);
         }
 

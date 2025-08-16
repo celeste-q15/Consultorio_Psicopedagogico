@@ -22,6 +22,8 @@ namespace ConsultorioPsicopedagogico.CDatos
         private string domicilio_D;
         private string obrasocial_D;
         private string dniTutor_D;
+        private string contactoTutor_D;
+        
 
         public int Dni_D { get => dni_D; set => dni_D = value; }
         public string Apellido_D { get => apellido_D; set => apellido_D = value; }
@@ -34,6 +36,7 @@ namespace ConsultorioPsicopedagogico.CDatos
         public string Domicilio_D { get => domicilio_D; set => domicilio_D = value; }
         public string Obrasocial_D { get => obrasocial_D; set => obrasocial_D = value; }
         public string DniTutor_D { get => dniTutor_D; set => dniTutor_D = value; }
+        
 
         public void CargarEnSql(Concurrentes_CD concurrenteN)
         {
@@ -83,7 +86,22 @@ namespace ConsultorioPsicopedagogico.CDatos
                 MySqlConnection conexion = new MySqlConnection(Conexion.ConnectionString);
                 conexion.Open();
 
-                string cadena = "SELECT * FROM Concurrentes";
+                string cadena = @"
+                SELECT 
+                    c.DNI_C AS 'DNI_C',
+                    CONCAT(c.Apellido, ' ', c.Nombre) AS 'ApellidoNombre',
+                    c.FechaNac AS 'FechaNac',
+                    c.Diagnostico AS 'Diagnostico',
+                    c.Escuela AS 'Escuela',
+                    c.AñoEscolar AS 'AnioEscolar',
+                    c.NivelEscolar AS 'NivelEscolar',
+                    c.Domicilio AS 'Domicilio',
+                    CONCAT(t.Apellido,' ', t.Nombre) AS 'Tutor', -- <--- Aquí traes el nombre del tutor
+                    t.DNI_Tutor AS 'DNI_Tutor', -- <--- Aquí traes el DNI del tutor
+                    t.Telefono AS 'ContactoTutor',   -- <--- Aquí traes el contacto del tutor
+                    c.Obrasocial AS 'ObraSocial'
+                FROM Concurrentes c
+                LEFT JOIN tutor t ON c.DNI_Tutor = t.DNI_Tutor"; 
                 MySqlCommand comando = new MySqlCommand(cadena, conexion);
                 MySqlDataReader leerFilas = comando.ExecuteReader();
                 DataTable tablaSQL = new DataTable();
@@ -105,27 +123,52 @@ namespace ConsultorioPsicopedagogico.CDatos
             try
             {
                 Concurrentes_CD concurrenteSeleccionado = new Concurrentes_CD();
-                MySqlConnection conexion = new MySqlConnection(Conexion.ConnectionString);
-                string cadena = $"SELECT * FROM Concurrentes WHERE DNI_C = {dni}";
-                conexion.Open();
-
-                MySqlCommand comando = new MySqlCommand(cadena, conexion);
-                MySqlDataReader registro = comando.ExecuteReader();
-                while (registro.Read())
+                using (MySqlConnection conexion = new MySqlConnection(Conexion.ConnectionString))
                 {
-                    concurrenteSeleccionado.Dni_D = Convert.ToInt32(registro["DNI_C"].ToString());
-                    concurrenteSeleccionado.Apellido_D = registro["Apellido"].ToString();
-                    concurrenteSeleccionado.Nombre_D = registro["Nombre"].ToString();
-                    concurrenteSeleccionado.FechaNac_D = registro["FechaNac"].ToString();
-                    concurrenteSeleccionado.Diagnostico_D = registro["Diagnostico"].ToString();
-                    concurrenteSeleccionado.Escuela_D = registro["Escuela"].ToString();
-                    concurrenteSeleccionado.AñoEscolar_D = Convert.ToInt32(registro["AñoEscolar"]);
-                    concurrenteSeleccionado.NivelEscolar_D = registro["NivelEscolar"].ToString();
-                    concurrenteSeleccionado.Domicilio_D = registro["Domicilio"].ToString();
-                    concurrenteSeleccionado.Obrasocial_D = registro["Obrasocial"].ToString(); 
-                    concurrenteSeleccionado.DniTutor_D = registro["DNI_Tutor"].ToString();
+                    string cadena = @"
+                SELECT 
+                    c.DNI_C,
+                    c.Apellido,
+                    c.Nombre,
+                    c.FechaNac,
+                    c.Diagnostico,
+                    c.Escuela,
+                    c.AñoEscolar,
+                    c.NivelEscolar,
+                    c.Domicilio,
+                    c.DNI_Tutor,
+                    c.Obrasocial,
+                    CONCAT(t.Apellido, ' ', t.Nombre) AS 'TutorCompleto',
+                    t.DNI_Tutor AS DNI_Tutor,
+                    t.Telefono AS ContactoTutor
+                FROM Concurrentes c
+                LEFT JOIN tutor t ON c.DNI_Tutor = t.DNI_Tutor
+                WHERE c.DNI_C = @dni";
+                    conexion.Open();
+
+                    using (MySqlCommand comando = new MySqlCommand(cadena, conexion))
+                    {
+                        comando.Parameters.AddWithValue("@dni", dni);
+                        using (MySqlDataReader registro = comando.ExecuteReader())
+                        {
+                            while (registro.Read())
+                            {
+                                concurrenteSeleccionado.Dni_D = Convert.ToInt32(registro["DNI_C"]);
+                                concurrenteSeleccionado.Apellido_D = registro["Apellido"].ToString();
+                                concurrenteSeleccionado.Nombre_D = registro["Nombre"].ToString();
+                                concurrenteSeleccionado.FechaNac_D = registro["FechaNac"].ToString();
+                                concurrenteSeleccionado.Diagnostico_D = registro["Diagnostico"].ToString();
+                                concurrenteSeleccionado.Escuela_D = registro["Escuela"].ToString();
+                                concurrenteSeleccionado.AñoEscolar_D = Convert.ToInt32(registro["AñoEscolar"]);
+                                concurrenteSeleccionado.NivelEscolar_D = registro["NivelEscolar"].ToString();
+                                concurrenteSeleccionado.Domicilio_D = registro["Domicilio"].ToString();
+                                concurrenteSeleccionado.Obrasocial_D = registro["Obrasocial"].ToString();
+                                concurrenteSeleccionado.DniTutor_D = registro["DNI_Tutor"].ToString();
+                                concurrenteSeleccionado.contactoTutor_D = registro["ContactoTutor"].ToString();
+                            }
+                        }
+                    }
                 }
-                conexion.Close();
                 return concurrenteSeleccionado;
             }
             catch (Exception ex)
@@ -214,7 +257,22 @@ namespace ConsultorioPsicopedagogico.CDatos
                 MySqlConnection conexion = new MySqlConnection(Conexion.ConnectionString);
                 conexion.Open();
 
-                string cadena = $"SELECT * FROM Concurrentes WHERE DNI_C = {dni}";
+                string cadena = $@"
+                SELECT 
+                    c.DNI_C AS 'DNI_C',
+                    CONCAT(c.Apellido, ' ', c.Nombre) AS 'ApellidoNombre',
+                    c.FechaNac AS 'FechaNac',
+                    c.Diagnostico AS 'Diagnostico',
+                    c.Escuela AS 'Escuela',
+                    c.AñoEscolar AS 'AnioEscolar',
+                    c.NivelEscolar AS 'NivelEscolar',
+                    c.Domicilio AS 'Domicilio',
+                    CONCAT(t.Apellido,' ', t.Nombre) AS 'Tutor', -- <--- Aquí traes el nombre del tutor
+                    t.DNI_Tutor AS 'DNI_Tutor', -- <--- Aquí traes el DNI del tutor
+                    t.Telefono AS 'ContactoTutor',   -- <--- Aquí traes el contacto del tutor
+                    c.Obrasocial AS 'ObraSocial'
+                FROM Concurrentes c
+                LEFT JOIN tutor t ON c.DNI_Tutor = t.DNI_Tutor WHERE c.DNI_C = {dni}";
                 MySqlCommand comando = new MySqlCommand(cadena, conexion);
                 MySqlDataReader leerFilas = comando.ExecuteReader();
                 DataTable tablaSQL = new DataTable();
@@ -284,6 +342,9 @@ namespace ConsultorioPsicopedagogico.CDatos
         //        return null;
         //    }
         //}
+
+        
+        
 
     }
 }
