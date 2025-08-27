@@ -47,9 +47,9 @@ namespace ConsultorioPsicopedagogico.CDatos
                     conexion.Open();
 
                     string query = @"INSERT INTO Concurrentes 
-                            (DNI_C, Apellido, Nombre, FechaNac, Diagnostico, Escuela, AñoEscolar, NivelEscolar, Domicilio, Obrasocial, DNI_Tutor)
+                            (DNI_C, Apellido, Nombre, FechaNac, Diagnostico, Escuela, AñoEscolar, NivelEscolar, Domicilio, Obrasocial, DNI_Tutor, Activo)
                             VALUES 
-                            (@Dni, @Apellido, @Nombre, @FechaNac, @Diagnostico, @Escuela, @AñoEscolar, @NivelEscolar, @Domicilio, @Obrasocial, @DniTutor)";
+                            (@Dni, @Apellido, @Nombre, @FechaNac, @Diagnostico, @Escuela, @AñoEscolar, @NivelEscolar, @Domicilio, @Obrasocial, @DniTutor, @Activo)";
 
                     using (MySqlCommand comando = new MySqlCommand(query, conexion))
                     {
@@ -64,6 +64,7 @@ namespace ConsultorioPsicopedagogico.CDatos
                         comando.Parameters.AddWithValue("@Domicilio", concurrenteN.Domicilio_D);
                         comando.Parameters.AddWithValue("@Obrasocial", concurrenteN.Obrasocial_D);
                         comando.Parameters.AddWithValue("@DniTutor", concurrenteN.DniTutor_D);
+                        comando.Parameters.AddWithValue("@Activo", 1); 
 
                         comando.ExecuteNonQuery();
                     }
@@ -101,7 +102,7 @@ namespace ConsultorioPsicopedagogico.CDatos
                     t.Telefono AS 'ContactoTutor',   -- <--- Aquí traes el contacto del tutor
                     c.Obrasocial AS 'ObraSocial'
                 FROM Concurrentes c
-                LEFT JOIN tutor t ON c.DNI_Tutor = t.DNI_Tutor"; 
+                LEFT JOIN tutor t ON c.DNI_Tutor = t.DNI_Tutor WHERE c.Activo = 1"; 
                 MySqlCommand comando = new MySqlCommand(cadena, conexion);
                 MySqlDataReader leerFilas = comando.ExecuteReader();
                 DataTable tablaSQL = new DataTable();
@@ -236,7 +237,7 @@ namespace ConsultorioPsicopedagogico.CDatos
                 conexion.Open();
 
                 int dni = concurrente.Dni_D;
-                string cadena = $"DELETE FROM Concurrentes WHERE DNI_C = {dni}";
+                string cadena = $"UPDATE Concurrentes SET Activo = 0 WHERE DNI_C = {dni}";
                 MySqlCommand comando = new MySqlCommand(cadena, conexion);
                 comando.ExecuteNonQuery();
                 conexion.Close();
@@ -246,6 +247,39 @@ namespace ConsultorioPsicopedagogico.CDatos
             catch (Exception ex)
             {
                 MessageBox.Show("Hubo un error en el intento de conexión: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        public DataTable BusquedaBaja(int dni)
+        {
+            try
+            {
+                MySqlConnection conexion = new MySqlConnection(Conexion.ConnectionString);
+                conexion.Open();
+
+                string cadena = $@"
+                SELECT 
+                    c.DNI_C AS 'DNI_C',
+                    CONCAT(c.Apellido, ' ', c.Nombre) AS 'ApellidoNombre',
+                    c.FechaNac AS 'FechaNac',                   
+                    CONCAT(t.Apellido,' ', t.Nombre) AS 'Tutor', 
+                    t.DNI_Tutor AS 'DNI_Tutor', 
+                    t.Telefono AS 'ContactoTutor',  
+                    c.Obrasocial AS 'ObraSocial'
+                FROM Concurrentes c
+                LEFT JOIN tutor t ON c.DNI_Tutor = t.DNI_Tutor WHERE c.DNI_C = {dni} AND c.Activo = 1";
+                MySqlCommand comando = new MySqlCommand(cadena, conexion);
+                MySqlDataReader leerFilas = comando.ExecuteReader();
+                DataTable tablaSQL = new DataTable();
+                tablaSQL.Load(leerFilas);
+                conexion.Close();
+
+                return tablaSQL;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Hubo un error en el intento de conexión: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
             }
         }
 

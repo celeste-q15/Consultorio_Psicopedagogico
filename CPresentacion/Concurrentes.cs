@@ -18,6 +18,7 @@ namespace ConsultorioPsicopedagogico.CPresentacion
         {
             InitializeComponent();
             CargarConcurrentes();
+            
         }
 
         private void CargarConcurrentes()
@@ -58,7 +59,12 @@ namespace ConsultorioPsicopedagogico.CPresentacion
             {
                 CargarConcurrentes();
             }
-        }  
-            
+        }
+
+        private void btn_eliminar_Click(object sender, EventArgs e)
+        {
+            var baja = new BajaConcurrente();
+            baja.Show();
+        }
     }
 }
