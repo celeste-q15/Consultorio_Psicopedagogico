@@ -110,7 +110,7 @@ namespace ConsultorioPsicopedagogico.CPresentacion
         {
             if (string.IsNullOrWhiteSpace(txt_DniBusqueda.Text))
             {
-                dtg_Baja.Refresh();
+                
             }
         }
         public class ValidacionPaciente : AbstractValidator<BajaConcurrente>
@@ -124,3 +124,39 @@ namespace ConsultorioPsicopedagogico.CPresentacion
         }
     }
 }
+
+//private void txt_Num_Recibo_TextChanged(object sender, EventArgs e)
+//{
+//    if (!String.IsNullOrEmpty(txt_Num_Recibo.Text))
+//    {
+
+//        // Verificar si cada carácter es un dígito numérico
+//        foreach (char c in txt_Num_Recibo.Text)
+//        {
+//            if (!Char.IsDigit(c))
+//            {
+//                MessageBox.Show("Por favor, ingrese solo números.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+//                txt_Num_Recibo.Text = ""; // Limpiar el TextBox si se ingresan caracteres no numéricos
+//                return;
+//            }
+//        }
+
+//        ClsLogicaVentas objVenta = new ClsLogicaVentas();
+//        dgvHistorialVenta.DataSource = objVenta.mostrar_busqueda(Convert.ToInt32(txt_Num_Recibo.Text));
+//    }
+//    else
+//    {
+//        ClsLogicaVentas objVentas = new ClsLogicaVentas();
+//        dgvHistorialVenta.DataSource = objVentas.mostrar_tabla_venta();
+
+//        // Ajustar automáticamente el tamaño de las columnas
+//        dgvHistorialVenta.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+
+//        // Alinear los datos al centro
+//        foreach (DataGridViewColumn column in dgvHistorialVenta.Columns)
+//        {
+//            column.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+//        }
+//    }
+
+//}
